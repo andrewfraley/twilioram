@@ -1,7 +1,7 @@
 require 'sinatra'
+require 'sinatra/reloader'
 require 'wolfram-alpha'
 require 'twilio-ruby'
-
 
 
 set :bind, '0.0.0.0'
