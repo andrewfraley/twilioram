@@ -1,0 +1,8 @@
+{
+  "run_list": [
+	"recipe[twilioram]"
+  ],
+  "automatic": {
+    "ipaddress": "twilio"
+  }
+}

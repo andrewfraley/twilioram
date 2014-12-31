@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+#^syntax detection
+
+site 'https://supermarket.getchef.com/api/v1'
+
+cookbook 'application',
+	:git => "https://github.com/poise/application",
+	:ref => "e8b315b26c"
+
+cookbook 'application_nginx',
+	:git => "https://github.com/poise/application_nginx",
+	:ref => "6e03376880"
