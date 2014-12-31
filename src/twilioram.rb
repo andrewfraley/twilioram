@@ -18,7 +18,7 @@ get '/question' do
 end
 
 not_found do
-  'The princess is in another castle...'
+  'but our princess is in another castle...'
 end
 
 def ask_wolf(query)
