@@ -1,0 +1,18 @@
+require 'daemons'
+
+module Daemons
+  class Application
+    def output_logfile; '<%=@app_log%>'; end
+  end
+end
+
+options = {
+	:dir        => '/tmp',
+    :dir_mode   => :normal,
+    :ontop      => false,
+    :log_output => true
+}
+
+Daemons.run_proc('twilioram.rb', options) do
+	exec "ruby <%=@app_entry%>"
+end
