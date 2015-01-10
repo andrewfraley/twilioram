@@ -6,7 +6,7 @@ require 'twilio-ruby'
 
 set :bind, '0.0.0.0'
 
-get '/question' do
+get '/sms-question' do
 	query = params[:Body]
 	if query
 		answer = ask_wolf params[:Body]
@@ -16,6 +16,39 @@ get '/question' do
 	 	twiml.text
 	end	
 end
+
+get '/voice-question' do
+	Twilio::TwiML::Response.new do |r|
+		r.Gather :numDigits => '1', :action => '/voice-question/handle-gather', :method => 'get' do |g|
+			r.Say "Hello, press 2 to ask a question."
+		end
+	end.text
+end
+
+get 'voice-question/handle-gather' do
+	if params['Digits'] == '1'
+		response = Twilio::TwiML::Response.new do |r|
+			r.Record :maxLength => '30', :action => '/voice-question/handle-record', :method => 'get'
+		end
+	else
+		redirect '/voice-question'
+	end
+	response.text
+end
+
+ 
+get '/voice-question/handle-record' do
+	Twilio::TwiML::Response.new do |r|
+		if params['RecordingUrl']
+    		`wget #{params['RecordingUrl']}`
+    	end
+	end.text
+end
+
+
+
+
+
 
 not_found do
   'But our princess is in another castle...'
