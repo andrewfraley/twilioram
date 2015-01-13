@@ -1,6 +1,3 @@
-WOLFKEY = 'V9PYWE-V6345TL3K5'
-GOOGLEKEY = 'AIzaSyAaVeupY5Rm6kt6ITUhIMfkHWUpjDVyelM'
-
 require 'sinatra'
 require 'sinatra/reloader'
 require 'wolfram-alpha'
@@ -8,6 +5,7 @@ require 'twilio-ruby'
 require 'open-uri'
 require 'json'
 
+require_relative 'apikeys'
 
 set :bind, '0.0.0.0'
 
@@ -33,22 +31,25 @@ end
 get '/voice-question/handle-gather' do
 	if params['Digits'] == '2'
 		response = Twilio::TwiML::Response.new do |r|
-			r.Record :maxLength => '30', :action => '/voice-question/handle-record', :method => 'get'
+			r.Record 	:maxLength => '6', 
+						:action => '/voice-question/handle-record',
+						:method => 'get',
+						:timeout => '1'
 		end
 	else
 		redirect '/voice-question'
 	end
 	response.text
 end
-
  
 get '/voice-question/handle-record' do
 	Twilio::TwiML::Response.new do |r|
 		if params['RecordingUrl']
     		wavfile = save_audio(params['RecordingUrl'])
+    		delete_message(params['RecordingSid'])
     		r.Say "Please wait."
     		query = transcribe_speech(wavfile)
-    		File.delete(wavfile)
+    		#File.delete(wavfile)
     		if query
 				answer = ask_wolf(query)
 				r.Say query
@@ -103,6 +104,11 @@ def ask_wolf(query)
 	else
 		return "Sorry, unable to process query"
 	end
+end
+
+def delete_message(sid)
+	@client = Twilio::REST::Client.new ACCOUNT_SID, AUTH_TOKEN
+	@client.recordings.get(sid).delete()
 end
 
 # 404
