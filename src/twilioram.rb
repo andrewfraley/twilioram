@@ -45,11 +45,11 @@ end
 get '/voice-question/handle-record' do
 	Twilio::TwiML::Response.new do |r|
 		if params['RecordingUrl']
-    		wavfile = save_audio(params['RecordingUrl'])
+    		wavfile = save_audio(params['RecordingUrl'], params['RecordingSid'])
     		delete_message(params['RecordingSid'])
     		r.Say "Please wait."
     		query = transcribe_speech(wavfile)
-    		#File.delete(wavfile)
+    		File.delete(wavfile)
     		if query
 				answer = ask_wolf(query)
 				r.Say query
@@ -60,12 +60,9 @@ get '/voice-question/handle-record' do
 	end.text
 end
 
-def save_audio(url)
-	# Download the twilio audio to a file with UTC timstamp in the name plus a random number to avoid naming conflicts
-	# (We could probably use the RecordingSID instead)
-	time = Time.now.getutc
-	randnum = rand(100...1000)
-	wavfile = "/tmp/twilio-#{time}-#{randnum}.wav"
+def save_audio(url, sid)
+	# Name the file with the RecordingSid from Twilio
+	wavfile = "/tmp/#{sid}.wav"
 	File.open(wavfile, "wb") do |file|
 		file.write open(url).read
 	end
