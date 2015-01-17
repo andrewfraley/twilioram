@@ -9,6 +9,7 @@ require_relative 'apikeys'
 
 set :bind, '0.0.0.0'
 
+
 get '/sms-question' do
 	query = params[:Body]
 	if query
@@ -106,6 +107,11 @@ end
 def delete_message(sid)
 	@client = Twilio::REST::Client.new ACCOUNT_SID, AUTH_TOKEN
 	@client.recordings.get(sid).delete()
+end
+
+# Landing page
+get "/" do
+  redirect '/index.html'
 end
 
 # 404
