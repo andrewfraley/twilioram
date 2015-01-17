@@ -109,9 +109,10 @@ def delete_message(sid)
 	@client.recordings.get(sid).delete()
 end
 
-# Landing page
+# Landing page - Sinatra seems really slow about serving static files,
+# serve them up through nginx instead
 get "/" do
-  redirect '/index.html'
+  redirect '/public/'
 end
 
 # 404
