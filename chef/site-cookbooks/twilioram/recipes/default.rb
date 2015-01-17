@@ -22,16 +22,13 @@ app_log = "/tmp/twilioram.log"
 
 # Path to daemon control script
 daemon_control = "#{app_path}/twilioram_daemon.rb"
-
-
  
 user daemon_user do
 	action :create
 end
 
-
-# Note that we're not going to own the application as the daemon user, since we don't
-# want anyone making changes. 
+# Deploy the application from the github repo and setup nginx
+# to proxy to sinatra 
 application 'twilioram' do
   path app_path
   repository 'https://github.com/andrewfraley/twilioram.git'
@@ -39,7 +36,13 @@ application 'twilioram' do
     hosts ['localhost']
     application_port 4567
     set_host_header true
+    static_files "/public" => "src/public"
   end
+end
+
+# Create symlink to apikeys.rb
+link "#{app_path}/current/src/apikeys.rb" do
+	to "#{app_path}/apikeys.rb"
 end
 
 # Template for the daemon control script
